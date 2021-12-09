@@ -1,8 +1,12 @@
 # Python
 from typing import Optional
+# La clase Enum nos permite generar enumeraciones de strings en este caso necesarias para generar las validaciones
+# del atributo hair_color
+from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel
+# Importamos Field de la libreria pydantic para generar validaciones directamente en la clase de los modelos
+from pydantic import BaseModel, Field
 
 # FastAPI
 from fastapi import FastAPI, Body, Query, Path
@@ -14,6 +18,17 @@ app = FastAPI()
 
 # Crear los modelos
 
+# Heredando en la clase HairColor la clase Enum
+
+class HairColor(Enum):
+    white = "white"
+    brown = "brown"
+    black = "black"
+    blonde = "blonde"
+    red  = "red"
+    green = "green"
+    blue  = "blue"
+
 class Location(BaseModel):
 
     city: str
@@ -22,13 +37,29 @@ class Location(BaseModel):
 
 class Person(BaseModel):
 
-    first_name : str
-    last_name : str
-    age: int
+    # Parametrizamos la informacion que debe tener cada uno de los atributos de nuestra clase
+
+    first_name : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+
+    last_name : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        )
+
+    age: int = Field(
+        ...,
+        gt= 0,
+        le=115,
+    )
 
     # Los siguientes son valores opcionales
-    hair_color : Optional[str] = None
-    is_married: Optional[bool] = None
+    hair_color : Optional[HairColor] = Field(default=None)
+    is_married: Optional[bool] = Field(default=None)
 
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
