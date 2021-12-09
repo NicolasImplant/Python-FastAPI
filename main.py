@@ -35,17 +35,20 @@ class Location(BaseModel):
     city: str = Field(
         default= None,
         min_length = 1,
-        max_length = 50
+        max_length = 50,
+        example = 'Bogota'
     )
     state: str = Field(
         default= None,
         min_length = 1,
-        max_length = 50
+        max_length = 50,
+        example = 'Cundinamarca'
     )
     country: str = Field(
         default= None,
         min_length = 1,
-        max_length = 50
+        max_length = 50,
+        example = 'Colombia'
     )
 
 class Person(BaseModel):
@@ -188,16 +191,16 @@ def update_person(
         gt= 0
     ),
     person: Person = Body(...),
-    
+    location : Location = Body(...)    
 ):
 
     # Generamos un único diccionario para retornar los archivos JSON con el resultado de los 2 request body "person & location"   
     
-    #results = person.dict()
-    #results.update(location.dict())
+    results = person.dict()
+    results.update(location.dict())
 
     # Si bien los diccionarios en python se pueden combinar de con una sintaxis mas sencilla como:
     # "person.dict() & location.dict()" FastAPI no soporta un este tipo de declaraciones, por lo tanto debe ser de la manera 
     # más clasica 
     
-    return person
+    return results
