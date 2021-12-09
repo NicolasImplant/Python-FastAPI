@@ -14,6 +14,12 @@ app = FastAPI()
 
 # Crear los modelos
 
+class Location(BaseModel):
+
+    city: str
+    state: str
+    country: str
+
 class Person(BaseModel):
 
     first_name : str
@@ -82,3 +88,33 @@ def show_person(
         )
 ):
     return {person_id: 'It exists!'} 
+
+
+# Validaciones Request Body
+
+@app.put('/person/{person_id}')
+
+# Cada vez que un usuario haga una peticion de tipo .put() en este endpoint en particular con un usuario
+# y un id especifico podrá actualizar el contenido a traves de un request body
+
+def update_person(
+    person_id:int = Path(
+        ...,
+        title='Person ID',
+        description='This is the person ID',
+        gt= 0
+    ),
+    person: Person = Body(...),
+    location: Location = Body(...)
+):
+
+    # Generamos un único diccionario para retornar los archivos JSON con el resultado de los 2 request body "person & location"   
+    
+    results = person.dict()
+    results.update(location.dict())
+
+    # Si bien los diccionarios en python se pueden combinar de con una sintaxis mas sencilla como:
+    # "person.dict() & location.dict()" FastAPI no soporta un este tipo de declaraciones, por lo tanto debe ser de la manera 
+    # más clasica 
+    
+    return results
