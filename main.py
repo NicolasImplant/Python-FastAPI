@@ -6,7 +6,7 @@ from enum import Enum
 
 # Pydantic
 # Importamos Field de la libreria pydantic para generar validaciones directamente en la clase de los modelos
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
 from fastapi import FastAPI, Body, Query, Path
@@ -31,9 +31,21 @@ class HairColor(Enum):
 
 class Location(BaseModel):
 
-    city: str
-    state: str
-    country: str
+    city: str = Field(
+        default= None,
+        min_length = 1,
+        max_length = 50
+    )
+    state: str = Field(
+        default= None,
+        min_length = 1,
+        max_length = 50
+    )
+    country: str = Field(
+        default= None,
+        min_length = 1,
+        max_length = 50
+    )
 
 class Person(BaseModel):
 
@@ -57,9 +69,26 @@ class Person(BaseModel):
         le=115,
     )
 
+    email: EmailStr = Field(
+        ...,
+        title= 'User email',
+        description= 'Email from user'
+    )
+
     # Los siguientes son valores opcionales
-    hair_color : Optional[HairColor] = Field(default=None)
+    hair_color : Optional[HairColor] = Field(default=None)    
     is_married: Optional[bool] = Field(default=None)
+
+    # Validando tipos de datos especiales
+    credict_card: Optional[PaymentCardNumber] = Field(
+        default=None,
+        title= 'Credict Card Number',
+        description= 'use if you want to link a credit card for your account')
+
+    website: Optional[HttpUrl] = Field(
+        default= None,
+        title= 'User Website',
+        description= 'use if you want to link your website in your account')
 
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
