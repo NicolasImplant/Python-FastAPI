@@ -9,7 +9,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
-from fastapi import FastAPI, Body, Query, Path, status
+from fastapi import FastAPI, Body, Query, Path, status, Form
 from starlette.status import HTTP_202_ACCEPTED, HTTP_302_FOUND
 
 # Inicializamos la variable con una instancia de fastAPI, de esta manera se crea un objeto de la clase fastAPI y se asigna
@@ -131,6 +131,13 @@ class PersonOut(PersonBase):
     # Como esta es la clase de respuesta, no necesitamos ingresar nada, como buena practica generamos un pass
     pass    
 
+class LoginOut(BaseModel):
+    username: str = Field(
+        ...,
+        max_length= 20,
+        example = 'Nicolasimplant'
+    )
+
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
 
@@ -243,3 +250,19 @@ def update_person(
     # más clasica 
     
     return results
+
+# Nueva path operation function que tendrá por defecto el endpoint /login para implementar los formularios en python
+# se debe instalar previamente la librería python-multiparts
+
+@app.post(
+    path='/login',
+    response_model=LoginOut,
+    status_code=status.HTTP_200_OK
+)
+def login(
+    username:str = Form(...),
+    password:str = Form(...)):
+    
+    # Dado que el unico formato de salida permitido son los diccionarios, debemos instanciar la clase para 
+    # garantizar el formato de respuesta
+    return LoginOut(username = username)
