@@ -9,7 +9,7 @@ from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
-from fastapi import FastAPI, Body, Query, Path
+from fastapi import FastAPI, Body, Query, Path, status
 
 # Inicializamos la variable con una instancia de fastAPI, de esta manera se crea un objeto de la clase fastAPI y se asigna
 # la variable app
@@ -133,7 +133,10 @@ class PersonOut(PersonBase):
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
 
-@app.get('/')
+# Para usar la clase status necesitamos ingresarlo como parametro en el decorador, se espera la respuesta 200
+@app.get(
+    path= '/', 
+    status_code=status.HTTP_200_OK)
 def home():
     return {'Hello':'World'}
 
@@ -143,15 +146,23 @@ def home():
 # La manera adecuada de manejar las contraseñas en nuestro codigo es utilizando el atributo
 # response model al interior de nuestro decorador, este atributo hace que en la respuesta se envíen todos los datos
 # con excepcion de la contraseña
+# Con el decorador status se espera tener la respuesta 201 dado que estamos creando un usuario
 
-@app.post('/person/new', response_model=PersonOut)
+@app.post(
+    path='/person/new', 
+    response_model=PersonOut,
+    status_code=status.HTTP_201_CREATED)
+
 # Request Body, debido a la notación (...) indica que el parametro o el atributo son obligatorios
 def create_person(person: Person = Body(...)): 
     return person
 
 # Validation query parameters
+# Nuevamente se espera encontar una respuesta 200 unicamente
 
-@app.get("/person/detail")
+@app.get(
+    path="/person/detail",
+    status_code=status.HTTP_200_OK)
 
     # Funcion para mostrar persona en el endpoint, por default el nombre sera nulo o "None", y sus carateristicas son
     # de tipo string con un mínimo de un caracter y un maximo de 50. Si bien lo ideal es que un query parameter sea opcional
