@@ -3,13 +3,17 @@ from typing import Optional
 # La clase Enum nos permite generar enumeraciones de strings en este caso necesarias para generar las validaciones
 # del atributo hair_color
 from enum import Enum
+from fastapi.param_functions import Header
 
 # Pydantic
 # Importamos Field de la libreria pydantic para generar validaciones directamente en la clase de los modelos
 from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
-from fastapi import FastAPI, Body, Query, Path, status, Form
+# Importar las clases y metodos
+from fastapi import FastAPI,  status 
+# Importar el tipo de datos soportados
+from fastapi import Body, Query, Path,Form, Header, Cookie
 from starlette.status import HTTP_202_ACCEPTED, HTTP_302_FOUND
 
 # Inicializamos la variable con una instancia de fastAPI, de esta manera se crea un objeto de la clase fastAPI y se asigna
@@ -251,6 +255,8 @@ def update_person(
     
     return results
 
+# FORMS
+
 # Nueva path operation function que tendrá por defecto el endpoint /login para implementar los formularios en python
 # se debe instalar previamente la librería python-multiparts
 
@@ -266,3 +272,40 @@ def login(
     # Dado que el unico formato de salida permitido son los diccionarios, debemos instanciar la clase para 
     # garantizar el formato de respuesta
     return LoginOut(username = username)
+
+
+# Cookies and headers parameters
+
+# Creamos una nueva path operations
+
+@app.post(
+    path= '/contact',
+    status_code=status.HTTP_200_OK,
+)
+
+# Funcion que recibe el formulario de contacto.
+def contact(
+
+    first_name:str = Form(
+        ...,
+        max_length=20,
+        min_length=1,        
+    ),
+
+    last_name:str = Form(
+    ...,
+    max_length=20,
+    min_length=1
+    ),
+
+    email :EmailStr = Form(...),
+
+    message: str = Form(
+        ...,
+        min_length=20
+    ),
+
+    user_agent:Optional[str] = Header(default=None),
+    ads: Optional[str] = Cookie(default=None)
+):
+    return user_agent
