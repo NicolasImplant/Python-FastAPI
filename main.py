@@ -146,7 +146,8 @@ class LoginOut(BaseModel):
 # Para usar la clase status necesitamos ingresarlo como parametro en el decorador, se espera la respuesta 200
 @app.get(
     path= '/', 
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=['Home'])
 def home():
     return {'Hello':'World'}
 
@@ -161,7 +162,8 @@ def home():
 @app.post(
     path='/person/new', 
     response_model=PersonOut,
-    status_code=status.HTTP_201_CREATED)
+    status_code=status.HTTP_201_CREATED,
+    tags=['Persons'])
 
 # Request Body, debido a la notación (...) indica que el parametro o el atributo son obligatorios
 def create_person(person: Person = Body(...)): 
@@ -172,7 +174,8 @@ def create_person(person: Person = Body(...)):
 
 @app.get(
     path="/person/detail",
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=['Persons'])
 
     # Funcion para mostrar persona en el endpoint, por default el nombre sera nulo o "None", y sus carateristicas son
     # de tipo string con un mínimo de un caracter y un maximo de 50. Si bien lo ideal es que un query parameter sea opcional
@@ -207,7 +210,8 @@ persons = [1,2,3,4,5]
 
 @app.get(
     path='/person/detail/{person_id}',
-    status_code=status.HTTP_302_FOUND)
+    status_code=status.HTTP_302_FOUND,
+    tags=['Persons'])
 
 # En este caso marcamos como obligatorio el parametro person_id, y con la propiedad gt o "Greater than" garantizamos que
 # no admita un id igual o menor que cero
@@ -233,7 +237,8 @@ def show_person(
 
 @app.put(
     path='/person/{person_id}',
-    status_code=status.HTTP_302_FOUND)
+    status_code=status.HTTP_302_FOUND,
+    tags=['Persons'])
 
 # Cada vez que un usuario haga una peticion de tipo .put() en este endpoint en particular con un usuario
 # y un id especifico podrá actualizar el contenido a traves de un request body
@@ -269,7 +274,8 @@ def update_person(
 @app.post(
     path='/login',
     response_model=LoginOut,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=['Persons']
 )
 def login(
     username:str = Form(...),
@@ -287,6 +293,7 @@ def login(
 @app.post(
     path= '/contact',
     status_code=status.HTTP_200_OK,
+    tags=['Contact']
 )
 
 # Funcion que recibe el formulario de contacto.
@@ -319,7 +326,8 @@ def contact(
 
 # Generamos el path operator para la subida de archivos
 @app.post(
-    path='/post-image'
+    path='/post-image',
+    tags=['Images']
 )
 
 def post_image(
