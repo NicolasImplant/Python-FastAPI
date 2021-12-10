@@ -51,80 +51,9 @@ class Location(BaseModel):
         example = 'Colombia'
     )
 
-class Person(BaseModel):
-
+class PersonBase(BaseModel):
     # Parametrizamos la informacion que debe tener cada uno de los atributos de nuestra clase
     # Utilizamos example para ingresar datos para realizar pruebas
-
-    first_name : str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        example = 'Nicolas'
-        )
-
-    last_name : str = Field(
-        ...,
-        min_length=1,
-        max_length=50,
-        example = 'Implant'
-        )
-
-    age: int = Field(
-        ...,
-        gt= 0,
-        le=115,
-        example = 25
-    )
-
-    email: EmailStr = Field(
-        ...,
-        title= 'User email',
-        description= 'Email from user',
-        example = 'nicolas@implant.com'
-    )
-
-    password: str = Field(..., min_length=8)
-
-    # Los siguientes son valores opcionales
-    hair_color : Optional[HairColor] = Field(default=None, example = HairColor.black)    
-    is_married: Optional[bool] = Field(default=None, example = False)
-
-    # Validando tipos de datos especiales
-    # credict_card: Optional[PaymentCardNumber] = Field(
-    #     default=None,
-    #     title= 'Credict Card Number',
-    #     description= 'use if you want to link a credit card for your account')
-
-    website: Optional[HttpUrl] = Field(
-        default= None,
-        title= 'User Website',
-        description= 'use if you want to link your website in your account',
-        example = 'https://www.google.com/'
-        )
-
-    # Se declara una clase para realizar las prubeas sobre fastAPI generando un ejemplo de prueba, 
-    # sin embargo es posible realizarlo de manera distinta directamente en los atributos de la clase
-
-    # class Config:
-    #     schema_extra = {
-    #         'example': {
-    #             'first_name' : 'Nicolas',
-    #             'last_name'  : 'Implant',
-    #             'age' : 30,
-    #             'email': 'nicolas@implant.com',
-    #             'hair_color' : 'brown',
-    #             'is_married': False
-    #         }
-    #     }
-
-
-class PersonOut(BaseModel):
-
-    # Parametrizamos la informacion que debe tener cada uno de los atributos de nuestra clase
-    # Utilizamos example para ingresar datos para realizar pruebas
-    # Esta clase será la respuesta de la API, en este caso en particular se considera a 'Password' como información sensible
-    # por esa razon en el modelo de respuesta permanece oculta para evitar filtraciones de seguridad.  
 
     first_name : str = Field(
         ...,
@@ -170,7 +99,36 @@ class PersonOut(BaseModel):
         description= 'use if you want to link your website in your account',
         example = 'https://www.google.com/'
         )
-    
+
+    # Se declara una clase para realizar las prubeas sobre fastAPI generando un ejemplo de prueba, 
+    # sin embargo es posible realizarlo de manera distinta directamente en los atributos de la clase
+
+    # class Config:
+    #     schema_extra = {
+    #         'example': {
+    #             'first_name' : 'Nicolas',
+    #             'last_name'  : 'Implant',
+    #             'age' : 30,
+    #             'email': 'nicolas@implant.com',
+    #             'hair_color' : 'brown',
+    #             'is_married': False
+    #         }
+    #     }
+
+
+class Person(PersonBase):
+    # Utilizando la herencia de la programación orientada a objetos podemos eliminar el código duplicado
+    # en este caso en particular se crean dos clases adicionales, en la primera heredamos todo de 'PersonBase'
+    # y en la clase person obtenemos la contraseña 
+    password: str = Field(
+        ..., 
+        min_length=8,
+        example= 'HolaSoyNico')
+
+
+class PersonOut(PersonBase):
+    # Como esta es la clase de respuesta, no necesitamos ingresar nada, como buena practica generamos un pass
+    pass    
 
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
