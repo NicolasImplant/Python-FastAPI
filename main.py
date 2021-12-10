@@ -149,6 +149,18 @@ class LoginOut(BaseModel):
     status_code=status.HTTP_200_OK,
     tags=['Home'])
 def home():
+    '''
+    Home
+
+    This path operator make a initial message Hello World
+
+    - Parameters:
+        - **Nothing**
+    
+    Return a dictionary or JSON objetc
+
+    '''
+    
     return {'Hello':'World'}
 
 # Request and response body
@@ -163,10 +175,22 @@ def home():
     path='/person/new', 
     response_model=PersonOut,
     status_code=status.HTTP_201_CREATED,
-    tags=['Persons'])
+    tags=['Persons'],
+    summary='Create person in the app')
 
 # Request Body, debido a la notación (...) indica que el parametro o el atributo son obligatorios
-def create_person(person: Person = Body(...)): 
+def create_person(person: Person = Body(...)):
+    '''
+    Create Person
+
+    This path operation creates a person in the app an save the information in the database
+
+    Parameters:
+    - Request Body Parameter
+        - **person: Person** : A person model with first name, last name, age, hair color and marital status
+    
+    Returns a person model with first name, last name, age, hair color and marital status   
+    ''' 
     return person
 
 # Validation query parameters
@@ -175,15 +199,16 @@ def create_person(person: Person = Body(...)):
 @app.get(
     path="/person/detail",
     status_code=status.HTTP_200_OK,
-    tags=['Persons'])
+    tags=['Persons'],
+    summary= 'show person user in app')
 
     # Funcion para mostrar persona en el endpoint, por default el nombre sera nulo o "None", y sus carateristicas son
     # de tipo string con un mínimo de un caracter y un maximo de 50. Si bien lo ideal es que un query parameter sea opcional
     # existen casos en los que puede ser obligatorio
 
 def show_person(
-    name: Optional[str] = Query(
 
+    name: Optional[str] = Query(
         None,
         min_length=1,
         max_length=50,
@@ -200,6 +225,19 @@ def show_person(
         example=10
         )
     ):
+
+    '''
+    Show Person
+
+    Show a person on the endpoint with a query
+
+    - Parameters:
+        - **Name** : This parameter is optional and the default value is None or null
+        - **Age**  : Is not optional, and it will be a integer number 
+
+    Return a dictionary or JSON object with key name and value age 
+    
+    '''
     return {name: age}
 
 
@@ -211,7 +249,8 @@ persons = [1,2,3,4,5]
 @app.get(
     path='/person/detail/{person_id}',
     status_code=status.HTTP_302_FOUND,
-    tags=['Persons'])
+    tags=['Persons'],
+    summary= 'Find person from id in the app')
 
 # En este caso marcamos como obligatorio el parametro person_id, y con la propiedad gt o "Greater than" garantizamos que
 # no admita un id igual o menor que cero
@@ -225,6 +264,18 @@ def show_person(
         example=123
         )
 ):  # Si el person id no se encuentra en la lista generada, se levantará una excepcion
+
+    '''
+    Show person
+
+    Show person finded for his user id, in case of user id is not in list of users raise an execption
+
+    - Parameters :
+        - **person_id** : It will be a integer number and is necesary for search user
+    
+    Return a dict or JSON object with a message exist
+
+    '''
     if person_id not in persons:
         raise HTTPException(
             status_code= status.HTTP_404_NOT_FOUND,
@@ -238,7 +289,8 @@ def show_person(
 @app.put(
     path='/person/{person_id}',
     status_code=status.HTTP_302_FOUND,
-    tags=['Persons'])
+    tags=['Persons'],
+    summary= 'Update person location')
 
 # Cada vez que un usuario haga una peticion de tipo .put() en este endpoint en particular con un usuario
 # y un id especifico podrá actualizar el contenido a traves de un request body
@@ -254,6 +306,19 @@ def update_person(
     person: Person = Body(...),
     location : Location = Body(...)    
 ):
+
+    '''
+    Update Person
+
+    This path update person location with the infomation from inputs user
+
+    - Parameters :
+        - **Person_id** : Similar of show person this path requires user id to search and update information
+    
+    Return a dict or JSON object nested class person and class location
+    '''
+
+
 
     # Generamos un único diccionario para retornar los archivos JSON con el resultado de los 2 request body "person & location"   
     
@@ -275,11 +340,25 @@ def update_person(
     path='/login',
     response_model=LoginOut,
     status_code=status.HTTP_200_OK,
-    tags=['Persons']
+    tags=['Persons'],
+    summary= 'User Login'
 )
 def login(
     username:str = Form(...),
     password:str = Form(...)):
+
+    '''
+    Login
+
+    This path is part of a endpoint login / logout and needs a form to work
+
+    - Parameters:
+        - **Username** : User nickname from his acount
+        - **password** : User password from his acount
+    
+    Return the class LoginOut with acount username
+
+    '''
     
     # Dado que el unico formato de salida permitido son los diccionarios, debemos instanciar la clase para 
     # garantizar el formato de respuesta
@@ -293,7 +372,8 @@ def login(
 @app.post(
     path= '/contact',
     status_code=status.HTTP_200_OK,
-    tags=['Contact']
+    tags=['Contact'],
+    summary= 'Contact with us'
 )
 
 # Funcion que recibe el formulario de contacto.
@@ -321,18 +401,44 @@ def contact(
     user_agent:Optional[str] = Header(default=None),
     ads: Optional[str] = Cookie(default=None)
 ):
+    '''
+    Contact
+
+    This path make a form to user contact with the support system app 
+
+    - Parameters :
+        - **first_name** : From user acount
+        - **last_name**  : From user acount
+        - **Email**      : From user acount
+        - **Message**    : Max 20 characters and describe your problem or suggest
+    
+    Return the header from user navigator 
+    
+    '''
     return user_agent
 
 
 # Generamos el path operator para la subida de archivos
 @app.post(
     path='/post-image',
-    tags=['Images']
+    tags=['Images'],
+    summary= ' Upload a file'
 )
 
 def post_image(
     image: UploadFile = File(...)
 ):
+    '''
+    Post Image
+
+    This path is for a user maked file uploads
+
+    - Parameters:
+        - **Image** : File user wants upload to app
+
+    Return a description of a propertys from file: name, format, and size
+    
+    '''
     return {
         # Atributos de la imagen cargada:
         'filename': image.filename,               # Nombre de la imagen
