@@ -3,7 +3,6 @@ from typing import Optional
 # La clase Enum nos permite generar enumeraciones de strings en este caso necesarias para generar las validaciones
 # del atributo hair_color
 from enum import Enum
-from fastapi.param_functions import Header
 
 # Pydantic
 # Importamos Field de la libreria pydantic para generar validaciones directamente en la clase de los modelos
@@ -11,10 +10,9 @@ from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
 # Importar las clases y metodos
-from fastapi import FastAPI,  status 
+from fastapi import FastAPI,  status , UploadFile
 # Importar el tipo de datos soportados
-from fastapi import Body, Query, Path,Form, Header, Cookie
-from starlette.status import HTTP_202_ACCEPTED, HTTP_302_FOUND
+from fastapi import Body, Query, Path, Form, Header, Cookie, File
 
 # Inicializamos la variable con una instancia de fastAPI, de esta manera se crea un objeto de la clase fastAPI y se asigna
 # la variable app
@@ -309,3 +307,20 @@ def contact(
     ads: Optional[str] = Cookie(default=None)
 ):
     return user_agent
+
+
+# Generamos el path operator para la subida de archivos
+@app.post(
+    path='/post-image'
+)
+
+def post_image(
+    image: UploadFile = File(...)
+):
+    return {
+        # Atributos de la imagen cargada:
+        'filename': image.filename,               # Nombre de la imagen
+        'format'  : image.content_type,           # Formato de la imagen
+        'size(kb)': round(len(image.file.read())/1024, ndigits=1)   # tamaño de la imagen, en este caso utilizamos las funciones nativas read()
+                                                  #  para leer el archivo en formato bytecode y con len() obtenemos su tamaño  
+    }
