@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
 # Importar las clases y metodos
-from fastapi import FastAPI,  status , UploadFile
+from fastapi import FastAPI,  status , UploadFile, HTTPException
 # Importar el tipo de datos soportados
 from fastapi import Body, Query, Path, Form, Header, Cookie, File
 
@@ -202,6 +202,9 @@ def show_person(
 
 # Validaciones: Path Parameters
 
+# Creamos una lista con los supuestos ususarios registrados
+persons = [1,2,3,4,5]
+
 @app.get(
     path='/person/detail/{person_id}',
     status_code=status.HTTP_302_FOUND)
@@ -217,7 +220,12 @@ def show_person(
         description='This is the person id, It\'s required',
         example=123
         )
-):
+):  # Si el person id no se encuentra en la lista generada, se levantará una excepcion
+    if person_id not in persons:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= 'This person doesn\'t exist'
+        )
     return {person_id: 'It exists!'} 
 
 
