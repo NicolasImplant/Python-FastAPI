@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, HttpUrl, EmailStr, PaymentCardNumber
 
 # FastAPI
 from fastapi import FastAPI, Body, Query, Path, status
+from starlette.status import HTTP_202_ACCEPTED, HTTP_302_FOUND
 
 # Inicializamos la variable con una instancia de fastAPI, de esta manera se crea un objeto de la clase fastAPI y se asigna
 # la variable app
@@ -192,9 +193,11 @@ def show_person(
 
 # Validaciones: Path Parameters
 
-@app.get('/person/detail/{person_id}')
+@app.get(
+    path='/person/detail/{person_id}',
+    status_code=status.HTTP_302_FOUND)
 
-# En este caso marcamos como obligatorio el parametro person_id, y con la propiedad pt o "Greater than" garantizamos que
+# En este caso marcamos como obligatorio el parametro person_id, y con la propiedad gt o "Greater than" garantizamos que
 # no admita un id igual o menor que cero
 
 def show_person(
@@ -211,7 +214,9 @@ def show_person(
 
 # Validaciones Request Body
 
-@app.put('/person/{person_id}')
+@app.put(
+    path='/person/{person_id}',
+    status_code=status.HTTP_302_FOUND)
 
 # Cada vez que un usuario haga una peticion de tipo .put() en este endpoint en particular con un usuario
 # y un id especifico podrá actualizar el contenido a traves de un request body
