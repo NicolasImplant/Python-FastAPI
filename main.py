@@ -84,6 +84,8 @@ class Person(BaseModel):
         example = 'nicolas@implant.com'
     )
 
+    password: str = Field(..., min_length=8)
+
     # Los siguientes son valores opcionales
     hair_color : Optional[HairColor] = Field(default=None, example = HairColor.black)    
     is_married: Optional[bool] = Field(default=None, example = False)
@@ -116,6 +118,60 @@ class Person(BaseModel):
     #         }
     #     }
 
+
+class PersonOut(BaseModel):
+
+    # Parametrizamos la informacion que debe tener cada uno de los atributos de nuestra clase
+    # Utilizamos example para ingresar datos para realizar pruebas
+    # Esta clase será la respuesta de la API, en este caso en particular se considera a 'Password' como información sensible
+    # por esa razon en el modelo de respuesta permanece oculta para evitar filtraciones de seguridad.  
+
+    first_name : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        example = 'Nicolas'
+        )
+
+    last_name : str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        example = 'Implant'
+        )
+
+    age: int = Field(
+        ...,
+        gt= 0,
+        le=115,
+        example = 25
+    )
+
+    email: EmailStr = Field(
+        ...,
+        title= 'User email',
+        description= 'Email from user',
+        example = 'nicolas@implant.com'
+    )
+
+    # Los siguientes son valores opcionales
+    hair_color : Optional[HairColor] = Field(default=None, example = HairColor.black)    
+    is_married: Optional[bool] = Field(default=None, example = False)
+
+    # Validando tipos de datos especiales
+    # credict_card: Optional[PaymentCardNumber] = Field(
+    #     default=None,
+    #     title= 'Credict Card Number',
+    #     description= 'use if you want to link a credit card for your account')
+
+    website: Optional[HttpUrl] = Field(
+        default= None,
+        title= 'User Website',
+        description= 'use if you want to link your website in your account',
+        example = 'https://www.google.com/'
+        )
+    
+
 # Path operation decorator, este decorador utiliza el metodo .get() para modificar la funcion home, que será el lugar al cual 
 # ingresaran los usuarios de nuesta app y retorna un archivo JSON
 
@@ -125,7 +181,12 @@ def home():
 
 # Request and response body
 
-@app.post('/person/new')
+
+# La manera adecuada de manejar las contraseñas en nuestro codigo es utilizando el atributo
+# response model al interior de nuestro decorador, este atributo hace que en la respuesta se envíen todos los datos
+# con excepcion de la contraseña
+
+@app.post('/person/new', response_model=PersonOut)
 # Request Body, debido a la notación (...) indica que el parametro o el atributo son obligatorios
 def create_person(person: Person = Body(...)): 
     return person
