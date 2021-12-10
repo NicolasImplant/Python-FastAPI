@@ -200,7 +200,8 @@ def create_person(person: Person = Body(...)):
     path="/person/detail",
     status_code=status.HTTP_200_OK,
     tags=['Persons'],
-    summary= 'show person user in app')
+    summary= 'show person user in app',
+    deprecated= True)
 
     # Funcion para mostrar persona en el endpoint, por default el nombre sera nulo o "None", y sus carateristicas son
     # de tipo string con un mínimo de un caracter y un maximo de 50. Si bien lo ideal es que un query parameter sea opcional
